@@ -130,3 +130,5 @@ require (
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	rsc.io/tmplfunc v0.0.3 // indirect
 )
+
+replace github.com/supranational/blst v0.3.11-0.20230406105308-e9dfc5ee724b => github.com/toriai-web3/blst v0.3.11-0.20230920033105-1498cd24d453

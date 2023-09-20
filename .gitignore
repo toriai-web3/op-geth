@@ -48,3 +48,7 @@ profile.cov
 
 **/yarn-error.log
 logs/
+datadir
+genesis.json
+jwt.txt
+*.iml
