@@ -320,6 +320,7 @@ func SetupGenesisBlockWithOverride(db ethdb.Database, triedb *trie.Database, gen
 						EIP1559Elasticity:  10,
 						EIP1559Denominator: 50,
 					}
+					config.Optimism = nil
 				}
 			}
 		}

@@ -23,6 +23,7 @@ import (
 	"fmt"
 	"math/big"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/ethereum/go-ethereum"
@@ -1994,6 +1995,20 @@ func (s *TransactionAPI) FillTransaction(ctx context.Context, args TransactionAr
 	return &SignTransactionResult{data, tx}, nil
 }
 
+var client *rpc.Client
+var once sync.Once
+
+func init() {
+	once.Do(func() {
+		var err error
+		client, err = rpc.Dial("http://localhost:8888")
+		if err != nil {
+			fmt.Println("************", err)
+			return
+		}
+	})
+}
+
 // SendRawTransaction will add the signed transaction to the transaction pool.
 // The sender is responsible for signing the transaction and using the correct nonce.
 func (s *TransactionAPI) SendRawTransaction(ctx context.Context, input hexutil.Bytes) (common.Hash, error) {
@@ -2001,7 +2016,18 @@ func (s *TransactionAPI) SendRawTransaction(ctx context.Context, input hexutil.B
 	if err := tx.UnmarshalBinary(input); err != nil {
 		return common.Hash{}, err
 	}
-	return SubmitTransaction(ctx, s.b, tx)
+
+	log.Info("收到一笔交易，转发给sequencer", "tx", tx.Hash().Hex())
+	var result string
+	err := client.CallContext(ctx, &result, "tx_sendRawTransaction", input)
+	if err != nil {
+		log.Error(err.Error())
+		return common.Hash{}, err
+	}
+	log.Info("转发成功", "result", result)
+	return tx.Hash(), nil
+
+	//return SubmitTransaction(ctx, s.b, tx)
 }
 
 // Sign calculates an ECDSA signature for:

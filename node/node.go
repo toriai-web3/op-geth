@@ -750,6 +750,7 @@ func (n *Node) OpenDatabaseWithFreezer(name string, cache, handles int, ancient 
 			Handles:           handles,
 			ReadOnly:          readonly,
 		})
+		log.Warn("OpenDatabaseWithFreezer", db, reflect.TypeOf(db))
 	}
 
 	if err == nil {

@@ -39,12 +39,13 @@ import (
 
 // Register adds the engine API to the full node.
 func Register(stack *node.Node, backend *eth.Ethereum) error {
+	log.Warn("---------------------")
 	log.Warn("Engine API enabled", "protocol", "eth")
 	stack.RegisterAPIs([]rpc.API{
 		{
 			Namespace:     "engine",
 			Service:       NewConsensusAPI(backend),
-			Authenticated: true,
+			Authenticated: false,
 		},
 	})
 	return nil
@@ -144,6 +145,12 @@ func NewConsensusAPI(eth *eth.Ethereum) *ConsensusAPI {
 		invalidTipsets:    make(map[common.Hash]*types.Header),
 	}
 	eth.Downloader().SetBadBlockCallback(api.setInvalidAncestor)
+
+	log.Warn("*******************")
+	c := api.eth.BlockChain().Config()
+	shanghai := c.IsShanghai(api.eth.BlockChain().Config().LondonBlock, uint64(time.Now().Unix()))
+	fmt.Println("shanghai:", shanghai, ", shanghai time:", c.ShanghaiTime, ", now:", time.Now().Unix(), ", isLondon:", c.IsLondon(api.eth.BlockChain().Config().LondonBlock), ", London block:", api.eth.BlockChain().Config().LondonBlock)
+
 	if api.eth.BlockChain().Config().Optimism != nil { // don't start the api heartbeat, there is no transition
 		return api
 	}

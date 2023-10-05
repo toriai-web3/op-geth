@@ -262,6 +262,7 @@ var (
 		conf.TerminalTotalDifficultyPassed = true
 		conf.BedrockBlock = big.NewInt(5)
 		conf.Optimism = &OptimismConfig{EIP1559Elasticity: 50, EIP1559Denominator: 10}
+		conf.Optimism = nil
 		return &conf
 	}()
 )

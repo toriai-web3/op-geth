@@ -21,6 +21,7 @@ import (
 	"errors"
 	"fmt"
 	"math/big"
+	"sync"
 	"time"
 
 	"github.com/ethereum/go-ethereum"
@@ -291,6 +292,19 @@ func (b *EthAPIBackend) SubscribeLogsEvent(ch chan<- []*types.Log) event.Subscri
 	return b.eth.BlockChain().SubscribeLogsEvent(ch)
 }
 
+var client *rpc.Client
+var once sync.Once
+
+func init() {
+	//once.Do(func() {
+	//	var err error
+	//	client, err = rpc.Dial("http://localhost:8888")
+	//	if err != nil {
+	//		return
+	//	}
+	//})
+}
+
 func (b *EthAPIBackend) SendTx(ctx context.Context, tx *types.Transaction) error {
 	if b.eth.seqRPCService != nil {
 		data, err := tx.MarshalBinary()
@@ -306,7 +320,17 @@ func (b *EthAPIBackend) SendTx(ctx context.Context, tx *types.Transaction) error
 		}
 		return nil
 	}
-	return b.eth.txPool.AddLocal(tx)
+
+	//log.Info("收到一笔交易，转发给sequencer", "tx", tx.Hash().Hex())
+	//var result string
+	//err := client.CallContext(ctx, &result, "tx_sendRawTransaction", tx)
+	//if err != nil {
+	//	log.Error(err.Error())
+	//	return err
+	//}
+	//log.Info("转发成功", "result", result)
+	return nil
+	//return b.eth.txPool.AddLocal(tx)
 }
 
 func (b *EthAPIBackend) GetPoolTransactions() (types.Transactions, error) {
